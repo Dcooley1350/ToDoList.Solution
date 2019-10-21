@@ -57,6 +57,7 @@ namespace ToDoList.Controllers
       return RedirectToAction("Index");
     }
 
+    [HttpGet("/Item/Details/{id}")]
     public ActionResult Details(int id)
     {
       var thisItem = _db.Items
@@ -65,6 +66,16 @@ namespace ToDoList.Controllers
           .FirstOrDefault(item => item.ItemId == id);
       return View(thisItem);
     }
+
+    // [HttpGet()]
+    // public ActionResult Details(Item i)
+    // {
+    //    var thisItem = _db.Items
+    //       .Include(item => item.Categories)
+    //       .ThenInclude(join => join.Category)
+    //       .FirstOrDefault(item => item.ItemId == i.ItemId);
+    //   return View(thisItem);
+    // }
 
     public ActionResult Edit(int id)
     {
@@ -125,6 +136,35 @@ namespace ToDoList.Controllers
       _db.CategoryItem.Remove(joinEntry);
       _db.SaveChanges();
       return RedirectToAction("Index");
+    }
+
+    [HttpPost("/Items/Finished/{id}")]
+    public ActionResult Finished(int id)
+    {
+      Item foundItem = _db.Items.FirstOrDefault(items => items.ItemId == id);
+      foundItem.Marked = true;
+      _db.Entry(foundItem).State = EntityState.Modified;
+      _db.SaveChanges();
+      return RedirectToAction("Details", new {id=id});
+    }
+
+    [HttpPost("/Items/Unfinished/{id}")]
+    public ActionResult Unfinished(int id)
+    {
+      Item foundItem = _db.Items.FirstOrDefault(name => name.ItemId == id);
+      foundItem.Marked = false;
+      _db.Entry(foundItem).State = EntityState.Modified;
+      _db.SaveChanges();
+      return RedirectToAction("Details", new {id=id});
+    }
+    [HttpGet]
+    public async Task<ActionResult> Alphabetize()
+    {
+      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      var currentUser = await _userManager.FindByIdAsync(userId);
+      var userList = _db.Items.Where(entry => entry.User.Id == currentUser.Id);
+      var userItems = userList.OrderBy(order => order.Date);
+      return View("Index", userItems);
     }
   }
 }

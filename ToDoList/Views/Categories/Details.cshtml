@@ -18,7 +18,13 @@ else
   <ul>
   @foreach(var join in Model.Items)
   {
-    <li>@join.Item.Description</li>
+    <li>@join.Item.Description, @join.Item.Date, 
+      @if (@join.Item.Marked == true)
+      {
+        <span>"Done"</span>
+      }
+
+      </li>
   }
   </ul>
 }

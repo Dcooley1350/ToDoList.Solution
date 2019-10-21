@@ -15,6 +15,12 @@
     @Html.LabelFor(model => model.Description)
     @Html.EditorFor(model => model.Description)
 
+    @Html.LabelFor(model => model.Marked)
+    @Html.CheckBoxFor(model => model.Marked)
+
+    @Html.LabelFor(model => model.Date)
+    @Html.EditorFor(model => model.Date, new { @type = "date" })
+
     @Html.Label("Select category")
     @Html.DropDownList("CategoryId")
 
